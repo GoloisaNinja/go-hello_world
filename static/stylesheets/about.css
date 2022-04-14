@@ -1,0 +1,9 @@
+.about_container {
+  width: 500px;
+  margin: 0 auto;
+}
+.about_container > h1 {
+  color: pink;
+}
+
+/*# sourceMappingURL=about.css.map */
