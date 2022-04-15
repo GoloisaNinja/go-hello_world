@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/GoloisaNinja/go-hello_world/pkg/config"
 	"github.com/GoloisaNinja/go-hello_world/pkg/handlers"
+	"github.com/GoloisaNinja/go-hello_world/pkg/render"
 	"log"
 	"net/http"
 )
@@ -10,6 +12,13 @@ import (
 const PORT = ":8000"
 
 func main() {
+	var app config.AppConfig
+	tc, err := render.CreateTemplateCache()
+	if err != nil {
+		log.Fatal("cannot create template cache...")
+	}
+	app.TemplateCache = tc
+	render.NewTemplates(&app)
 	http.HandleFunc("/", handlers.Home)
 	http.HandleFunc("/about", handlers.About)
 
@@ -19,7 +28,7 @@ func main() {
 
 	fmt.Printf("Server is up on port %s", PORT)
 
-	err := http.ListenAndServe(PORT, nil)
+	err = http.ListenAndServe(PORT, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
