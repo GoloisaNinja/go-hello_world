@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/GoloisaNinja/go-hello_world/pkg/config"
+	"github.com/GoloisaNinja/go-hello_world/pkg/models"
 	"html/template"
 	"log"
 	"net/http"
@@ -18,16 +19,30 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
 
-	tc := app.TemplateCache
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
+	var tc map[string]*template.Template
+	if app.UseCache {
+		tc = app.TemplateCache
+	} else {
+		var err error
+		tc, err = CreateTemplateCache()
+		if err != nil {
+			log.Fatal("could not create the template cache...")
+		}
+	}
+
 	t, ok := tc[tmpl]
 	if !ok {
 		log.Fatal("could not create template cache...")
 	}
 
 	buf := new(bytes.Buffer)
-	_ = t.Execute(buf, nil)
+	td = AddDefaultData(td)
+	_ = t.Execute(buf, td)
 	_, err := buf.WriteTo(w)
 	if err != nil {
 		fmt.Println("error writing template to browser", err)
