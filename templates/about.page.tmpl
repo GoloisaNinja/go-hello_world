@@ -9,5 +9,13 @@
         <p>The above is pure about page template</p>
         <h2>This is dynamic</h2>
         <p>{{index .StringMap "test"}}</p>
+        <h4>IP Information</h4>
+        <p>
+            {{if ne (index .StringMap "remote_ip") ""}}
+                Your remote IP address is {{index .StringMap "remote_ip"}}
+                {{else}}
+                You need to visit the <a href="/">Home Page</a> so that I can set your session IP!
+            {{end}}
+        </p>
     </div>
 {{end}}

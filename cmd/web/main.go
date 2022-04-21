@@ -5,14 +5,29 @@ import (
 	"github.com/GoloisaNinja/go-hello_world/pkg/config"
 	"github.com/GoloisaNinja/go-hello_world/pkg/handlers"
 	"github.com/GoloisaNinja/go-hello_world/pkg/render"
+	"github.com/alexedwards/scs/v2"
 	"log"
 	"net/http"
+	"time"
 )
 
 const PORT = ":8000"
 
+// boolean switch that impacts session cookie secure in both scs and middleware
+var app config.AppConfig
+var session *scs.SessionManager
+
 func main() {
-	var app config.AppConfig
+	app.IsProduction = false
+
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.IsProduction
+	
+	app.Session = session
+
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache...")
